@@ -136,6 +136,9 @@ code: decodedText
 }
 );
 
+if(!response.ok){
+throw new Error("Server error");
+}
 const result = await response.text();
 
 document.getElementById("status").innerText = result;
@@ -143,7 +146,7 @@ document.getElementById("status").innerText = result;
 }catch(e){
 
 document.getElementById("status").innerText =
-"Ошибка соединения";
+"⚠️ Сервер долго отвечает";
 
 }
 
