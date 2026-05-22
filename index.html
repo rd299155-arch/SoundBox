@@ -195,35 +195,13 @@ fps: 15,
 qrbox: {
 width: 320,
 height: 140
-},
-
-aspectRatio: 1.0
+}
 
 },
 onScanSuccess
 ).then(() => {
 
 console.log("Scanner started");
-
-try{
-
-const track = html5QrCode.getRunningTrack();
-
-const capabilities = track.getCapabilities();
-
-if(capabilities.zoom){
-
-track.applyConstraints({
-advanced: [{ zoom: 2 }]
-});
-
-}
-
-}catch(e){
-
-console.log("Zoom not supported");
-
-}
 
 });
 
