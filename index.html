@@ -80,10 +80,16 @@ navigator.vibrate?.(100);
 
 console.log(decodedText);
 
-alert(
+document.getElementById("status").innerText =
 (mode === "OUT" ? "Выдано: " : "Возврат: ")
-+ decodedText
-);
++ decodedText;
+
+setTimeout(() => {
+document.getElementById("status").innerText =
+mode === "OUT"
+? "Режим: Выдача"
+: "Режим: Возврат";
+}, 1000);
 
 }
 
