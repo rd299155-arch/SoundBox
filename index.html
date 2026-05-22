@@ -74,7 +74,20 @@ mode === "OUT"
 
 }
 
+let lastScan = "";
+let lastScanTime = 0;
 function onScanSuccess(decodedText){
+const now = Date.now();
+
+if (
+decodedText === lastScan &&
+now - lastScanTime < 2000
+){
+return;
+}
+
+lastScan = decodedText;
+lastScanTime = now;
 
 navigator.vibrate?.(100);
 
