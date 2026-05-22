@@ -215,7 +215,7 @@ html5QrCode.getRunningTrack();
 const capabilities =
 track.getCapabilities();
 
-if(capabilities.torch){
+if(capabilities && capabilities.torch){
 
 await track.applyConstraints({
 advanced: [{
