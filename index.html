@@ -1,66 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
+
 <head>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<title>Warehouse Scanner</title>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
 
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+
 body{
 margin:0;
 padding:0;
-background:#111;
+background:#0f0f0f;
 color:white;
-font-family:sans-serif;
-text-align:center;
+font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+display:flex;
+flex-direction:column;
+align-items:center;
+min-height:100vh;
+overflow:hidden;
+}
+
+.header{
+padding-top:20px;
+padding-bottom:10px;
+font-size:26px;
+font-weight:700;
 }
 
 #reader{
 width:92vw;
-max-width:320px;
-margin:auto;
-margin-top:10px;
-border-radius:20px;
+max-width:360px;
+height:220px;
 overflow:hidden;
+border-radius:24px;
+border:3px solid #2a2a2a;
+background:black;
 }
 
 .controls{
+width:100%;
+max-width:420px;
 padding:20px;
-}
-
-button{
-font-size:22px;
-padding:15px;
-margin:10px;
-width:170px;
-border:none;
-border-radius:14px;
-font-weight:bold;
-}
-
-.outBtn{
-background:#ff9800;
-color:white;
-}
-
-.inBtn{
-background:#4caf50;
-color:white;
-}
-
-#status{
-font-size:24px;
-padding:15px;
-min-height:60px;
-font-weight:bold;
+display:flex;
+flex-direction:column;
+align-items:center;
 }
 
 .modeText{
 font-size:18px;
-opacity:0.8;
-margin-top:10px;
+opacity:0.75;
+margin-bottom:15px;
+}
+
+.buttons{
+display:flex;
+gap:12px;
+width:100%;
+justify-content:center;
+}
+
+button{
+flex:1;
+max-width:180px;
+height:62px;
+border:none;
+border-radius:18px;
+font-size:22px;
+font-weight:700;
+color:white;
+}
+
+.outBtn{
+background:#ff9800;
+}
+
+.inBtn{
+background:#4caf50;
+}
+
+#status{
+margin-top:20px;
+font-size:22px;
+font-weight:700;
+min-height:32px;
+text-align:center;
+padding:10px;
+}
+
+.success{
+color:#4caf50;
+}
+
+.error{
+color:#ff5252;
+}
+
+.ready{
+color:#bdbdbd;
+}
+
+.scanLine{
+position:absolute;
+width:100%;
+height:2px;
+background:red;
+animation:scan 2s linear infinite;
+}
+
+@keyframes scan{
+0%{
+transform:translateY(0);
+}
+100%{
+transform:translateY(220px);
+}
 }
 
 </style>
@@ -68,6 +133,10 @@ margin-top:10px;
 </head>
 
 <body>
+
+<div class="header">
+Warehouse Scanner
+</div>
 
 <div id="reader"></div>
 
@@ -77,15 +146,23 @@ margin-top:10px;
 Режим: Выдача
 </div>
 
-<button class="outBtn" onclick="setMode('OUT')">
+<div class="buttons">
+
+<button
+class="outBtn"
+onclick="setMode('OUT')">
 Выдача
 </button>
 
-<button class="inBtn" onclick="setMode('IN')">
+<button
+class="inBtn"
+onclick="setMode('IN')">
 Прием
 </button>
 
-<div id="status">
+</div>
+
+<div id="status" class="ready">
 Готов к сканированию
 </div>
 
@@ -95,7 +172,13 @@ margin-top:10px;
 
 let mode = "OUT";
 
-let lastScanTimes = {};
+let isCooldown = false;
+
+let lastCode = "";
+
+let lastTime = 0;
+
+const statusEl = document.getElementById("status");
 
 function setMode(newMode){
 
@@ -106,6 +189,16 @@ mode === "OUT"
 ? "Режим: Выдача"
 : "Режим: Прием";
 
+navigator.vibrate?.(50);
+
+}
+
+function setStatus(text,type="ready"){
+
+statusEl.className = type;
+
+statusEl.innerText = text;
+
 }
 
 async function onScanSuccess(decodedText){
@@ -113,64 +206,109 @@ async function onScanSuccess(decodedText){
 const now = Date.now();
 
 if(
-lastScanTimes[decodedText] &&
-now - lastScanTimes[decodedText] < 10000
+decodedText === lastCode &&
+now - lastTime < 2000
 ){
 return;
 }
 
-lastScanTimes[decodedText] = now;
+if(isCooldown){
+return;
+}
 
-navigator.vibrate?.(100);
+isCooldown = true;
 
-document.getElementById("status").innerText =
-"Проверка: " + decodedText;
+lastCode = decodedText;
+lastTime = now;
+
+navigator.vibrate?.(120);
+
+setStatus(
+(mode === "OUT"
+? "Выдача: "
+: "Прием: ")
++ decodedText,
+"success"
+);
 
 try{
 
 const response = await fetch(
 "https://script.google.com/macros/s/AKfycbxS6NirNlFbeitnfQOSaO1h9_SN3ZgSrjMcRx1p3oyn0Un9xr5_THMZ3E9sYAzR2qg/exec",
 {
-method: "POST",
-body: JSON.stringify({
-mode: mode,
-code: decodedText
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+mode:mode,
+code:decodedText
 })
 }
 );
 
 if(!response.ok){
-throw new Error("Server error");
+throw new Error();
 }
-const result = await response.text();
-
-document.getElementById("status").innerText = result;
 
 }catch(e){
 
-document.getElementById("status").innerText =
-"⚠️ Сервер долго отвечает";
+setStatus(
+"Ошибка соединения",
+"error"
+);
+
+setTimeout(()=>{
+setStatus(
+"Готов к сканированию",
+"ready"
+);
+},1500);
+
+isCooldown = false;
+
+return;
 
 }
 
-setTimeout(() => {
+setTimeout(()=>{
 
-document.getElementById("status").innerText =
-"Готов к сканированию";
+setStatus(
+"Готов к сканированию",
+"ready"
+);
 
-}, 2000);
+isCooldown = false;
+
+},800);
 
 }
 
 const html5QrCode = new Html5Qrcode("reader");
 
 html5QrCode.start(
-{ facingMode: "environment" },
 {
-fps: 10,
-qrbox: 180,
-aspectRatio: 1
-disableFlip: false
+facingMode:"environment"
+},
+{
+fps:20,
+
+qrbox:{
+width:300,
+height:120
+},
+
+aspectRatio:1.777778,
+
+disableFlip:false,
+
+formatsToSupport:[
+Html5QrcodeSupportedFormats.CODE_128
+],
+
+experimentalFeatures:{
+useBarCodeDetectorIfSupported:true
+}
 },
 onScanSuccess
 );
@@ -178,4 +316,5 @@ onScanSuccess
 </script>
 
 </body>
+
 </html>
