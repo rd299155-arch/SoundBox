@@ -154,6 +154,9 @@ await fetch(
 "https://script.google.com/macros/s/AKfycbxS6NirNlFbeitnfQOSaO1h9_SN3ZgSrjMcRx1p3oyn0Un9xr5_THMZ3E9sYAzR2qg/exec",
 {
 method: "POST",
+headers:{
+"Content-Type":"text/plain"
+},
 body: JSON.stringify({
 mode: mode,
 code: decodedText
