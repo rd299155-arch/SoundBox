@@ -29,6 +29,15 @@ padding-bottom:10px;
 }
 
 #reader{
+width:320px;
+height:320px;
+margin-top:10px;
+border-radius:20px;
+overflow:hidden;
+border:3px solid #333;
+background:black;
+}
+
 .zoomControls{
 display:flex;
 align-items:center;
@@ -52,15 +61,6 @@ font-size:24px;
 font-weight:bold;
 width:70px;
 text-align:center;
-}
-  
-width:320px;
-height:320px;
-margin-top:10px;
-border-radius:20px;
-overflow:hidden;
-border:3px solid #333;
-background:black;
 }
 
 .controls{
@@ -114,6 +114,7 @@ Warehouse Scanner
 </div>
 
 <div id="reader"></div>
+
 <div class="zoomControls">
 
 <button onclick="changeZoom(-0.5)">
@@ -129,6 +130,7 @@ Warehouse Scanner
 </button>
 
 </div>
+
 <div class="controls">
 
 <div class="modeText" id="modeText">
@@ -154,6 +156,10 @@ Warehouse Scanner
 let mode = "OUT";
 
 let lastScanTimes = {};
+
+let currentZoom = 1;
+
+let currentTrack = null;
 
 function setMode(newMode){
 
@@ -225,9 +231,6 @@ statusElement.innerHTML =
 }, 2500);
 
 }
-  let currentZoom = 1;
-
-let currentTrack = null;
 
 async function changeZoom(step){
 
@@ -238,7 +241,9 @@ try{
 const capabilities =
 currentTrack.getCapabilities();
 
-if(!capabilities.zoom) return;
+if(!capabilities.zoom){
+return;
+}
 
 currentZoom += step;
 
@@ -267,6 +272,7 @@ console.log("Zoom failed");
 }
 
 }
+
 const html5QrCode = new Html5Qrcode("reader");
 
 html5QrCode.start(
@@ -296,20 +302,6 @@ const stream = video.srcObject;
 
 currentTrack =
 stream.getVideoTracks()[0];
-
-});
-
-console.log("Zoom applied");
-
-}
-
-}catch(e){
-
-console.log("Zoom failed", e);
-
-}
-
-}, 1000);
 
 });
 
