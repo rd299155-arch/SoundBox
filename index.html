@@ -142,11 +142,11 @@ lastScanTimes[decodedText] = now;
 
 navigator.vibrate?.(100);
 
-document.getElementById("status").innerText =
-(mode === "OUT"
-? "Выдача: "
-: "Прием: ")
-+ decodedText;
+const statusElement =
+document.getElementById("status");
+
+statusElement.innerHTML =
+"⏳ Проверка...";
 
 try{
 
@@ -166,22 +166,22 @@ code: decodedText
 
 const result = await response.text();
 
-document.getElementById("status").innerText =
-result;
+statusElement.innerHTML =
+result.replace(/\n/g,"<br>");
 
 }catch(e){
 
-document.getElementById("status").innerText =
+statusElement.innerHTML =
 "⚠️ Ошибка соединения";
 
 }
 
 setTimeout(() => {
 
-document.getElementById("status").innerText =
+statusElement.innerHTML =
 "Готов к сканированию";
 
-}, 1200);
+}, 2500);
 
 }
 
