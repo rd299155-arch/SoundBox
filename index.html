@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+
+body{
+font-family:sans-serif;
+text-align:center;
+padding:20px;
+background:#111;
+color:white;
+}
+
+button{
+font-size:24px;
+padding:15px;
+margin:10px;
+width:180px;
+border:none;
+border-radius:12px;
+}
+
+#reader{
+width:100%;
+max-width:500px;
+margin:auto;
+margin-top:20px;
+}
+
+#status{
+font-size:24px;
+margin:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Warehouse Scanner</h1>
+
+<button onclick="setMode('OUT')">
+Выдача
+</button>
+
+<button onclick="setMode('IN')">
+Возврат
+</button>
+
+<div id="status">
+Режим: Выдача
+</div>
+
+<div id="reader"></div>
+
+<script>
+
+let mode = "OUT";
+
+function setMode(newMode){
+
+mode = newMode;
+
+document.getElementById("status").innerText =
+mode === "OUT"
+? "Режим: Выдача"
+: "Режим: Возврат";
+
+}
+
+function onScanSuccess(decodedText){
+
+navigator.vibrate?.(100);
+
+console.log(decodedText);
+
+alert(
+(mode === "OUT" ? "Выдано: " : "Возврат: ")
++ decodedText
+);
+
+}
+
+const html5QrCode = new Html5Qrcode("reader");
+
+html5QrCode.start(
+{ facingMode: "environment" },
+{
+fps: 10,
+qrbox: 250
+},
+onScanSuccess
+);
+
+</script>
+
+</body>
+</html>
