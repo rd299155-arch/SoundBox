@@ -189,7 +189,17 @@ fps: 10,
 qrbox: 250
 },
 onScanSuccess
-);
+).then(() => {
+
+const track = html5QrCode.getRunningTrack();
+
+const capabilities = track.getCapabilities();
+
+if(capabilities.zoom){
+
+track.applyConstraints({
+advanced: [{ zoom: 2 }]
+});
 
 </script>
 
