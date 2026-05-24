@@ -189,7 +189,7 @@ let lastScanTimes = {};
 
 let currentTrack = null;
 
-let currentZoom = 2;
+let currentZoom = 1;
 
 let torchEnabled = false;
 
@@ -367,8 +367,6 @@ video.srcObject;
 
 currentTrack =
 stream.getVideoTracks()[0];
-
-applyZoom();
 
 console.log("Scanner started");
 
