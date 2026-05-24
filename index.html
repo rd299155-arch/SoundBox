@@ -189,7 +189,7 @@ let lastScanTimes = {};
 
 let currentTrack = null;
 
-let currentZoom = 1;
+let currentZoom = 2;
 
 let torchEnabled = false;
 
@@ -343,9 +343,7 @@ const html5QrCode = new Html5Qrcode("reader");
 
 html5QrCode.start(
 {
-facingMode: {
-ideal: "environment"
-}
+facingMode: "environment"
 },
 {
 fps: 8,
@@ -359,16 +357,44 @@ height: 110
 onScanSuccess
 ).then(() => {
 
+console.log("Scanner started");
+
+setTimeout(() => {
+
+try{
+
 const video =
 document.querySelector("#reader video");
+
+if(!video){
+return;
+}
 
 const stream =
 video.srcObject;
 
-currentTrack =
-stream.getVideoTracks()[0];
+if(!stream){
+return;
+}
 
-console.log("Scanner started");
+const tracks =
+stream.getVideoTracks();
+
+if(!tracks.length){
+return;
+}
+
+currentTrack = tracks[0];
+
+console.log("Track ready");
+
+}catch(e){
+
+console.log("Track error", e);
+
+}
+
+}, 1500);
 
 });
 
