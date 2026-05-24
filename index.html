@@ -78,6 +78,18 @@ opacity:0.8;
 margin-top:10px;
 }
 
+select,
+input{
+width:90%;
+max-width:360px;
+padding:14px;
+margin-top:12px;
+font-size:18px;
+border:none;
+border-radius:14px;
+outline:none;
+}
+
 </style>
 
 </head>
@@ -95,6 +107,31 @@ SoundBoxBaza
 <div class="modeText" id="modeText">
 Режим: Выдача
 </div>
+
+<select id="employee">
+
+<option value="">
+Сотрудник
+</option>
+
+<option value="Roman">
+Roman
+</option>
+
+<option value="Alex">
+Alex
+</option>
+
+<option value="Admin">
+Admin
+</option>
+
+</select>
+
+<input
+id="comment"
+placeholder="Комментарий"
+/>
 
 <button class="outBtn" onclick="setMode('OUT')">
 Выдача
@@ -161,7 +198,11 @@ headers:{
 },
 body: JSON.stringify({
 mode: mode,
-code: decodedText
+code: decodedText,
+employee:
+document.getElementById("employee").value,
+comment:
+document.getElementById("comment").value
 })
 }
 );
@@ -182,6 +223,9 @@ setTimeout(() => {
 
 statusElement.innerHTML =
 "Готов к сканированию";
+
+document.getElementById("comment")
+.value = "";
 
 }, 2500);
 
