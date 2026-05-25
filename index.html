@@ -19,7 +19,7 @@ viewport-fit=cover
 <script src="https://unpkg.com/html5-qrcode"></script>
 
 <style>
-https://github.com/rd299155-arch/SoundBox/blob/8d93091e3b374738fc3524141bb4969694ea9aff/logo.png
+
 body{
 margin:0;
 padding:0;
@@ -306,7 +306,20 @@ console.log("Torch error", e);
 }
 
 async function onScanSuccess(decodedText){
+const employee =
+document.getElementById("employee").value;
 
+if(employee == ""){
+
+document.getElementById("status")
+.innerHTML =
+"⚠️ Выберите сотрудника";
+
+navigator.vibrate?.([100,80,100]);
+
+return;
+
+}
 const now = Date.now();
 
 if(
