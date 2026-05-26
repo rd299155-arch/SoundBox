@@ -86,6 +86,11 @@ width:100%;
 max-width:420px;
 }
 
+.listBtn{
+background:#222;
+width:350px;
+}
+
 button{
 font-size:22px;
 padding:15px;
@@ -105,6 +110,30 @@ background:#ff9800;
 background:#4caf50;
 }
 
+
+#outPage{
+width:100%;
+padding:20px;
+}
+
+#outList{
+background:#1b1b1b;
+border-radius:16px;
+padding:16px;
+text-align:left;
+font-size:18px;
+max-height:65vh;
+overflow-y:auto;
+margin-bottom:20px;
+}
+
+.outTitle{
+font-size:22px;
+font-weight:bold;
+margin-bottom:14px;
+}
+
+  
 #status{
 font-size:24px;
 padding:0px;
@@ -222,12 +251,36 @@ placeholder="Комментарий"
 Прием
 </button>
 
+<button
+class="listBtn"
+onclick="showOutList()"
+>
+OUT LIST
+</button>
+
 <div id="status">
 Готов к сканированию
 </div>
 
 </div>
 
+<div
+id="outPage"
+style="display:none;"
+>
+
+<div id="outList">
+
+</div>
+
+<button
+class="inBtn"
+onclick="showScanner()"
+>
+SCAN
+</button>
+
+</div>
 <script>
 
 let mode = "OUT";
@@ -398,6 +451,90 @@ document.getElementById("comment")
 }, 2500);
 
 }
+
+async function showOutList(){
+
+document.getElementById("reader")
+.style.display = "none";
+
+document.querySelector(".cameraControls")
+.style.display = "none";
+
+document.querySelector(".controls")
+.style.display = "none";
+
+document.getElementById("outPage")
+.style.display = "block";
+
+loadOutList();
+
+}
+
+function showScanner(){
+
+document.getElementById("reader")
+.style.display = "block";
+
+document.querySelector(".cameraControls")
+.style.display = "flex";
+
+document.querySelector(".controls")
+.style.display = "block";
+
+document.getElementById("outPage")
+.style.display = "none";
+
+}
+
+async function loadOutList(){
+
+try{
+
+const response = await fetch(
+"https://script.google.com/macros/s/AKfycbxtnvaiS8mhgR6vBqsLAEBCn945bMll0q4od6C6cEMyhbq3c4vPmxNnaJJ4sEOOdP8/exec?action=outlist"
+);
+
+const data =
+await response.json();
+
+let html =
+'<div class="outTitle">OUT NOW</div>';
+
+for(const item in data){
+
+html +=
+"• "
++ item
++ " x"
++ data[item]
++ "<br><br>";
+
+}
+
+if(html ==
+'<div class="outTitle">OUT NOW</div>'){
+
+html +=
+'✅ Everything is IN';
+
+}
+
+document.getElementById("outList")
+.innerHTML = html;
+
+}catch(e){
+
+console.log(e);
+
+document.getElementById("outList")
+.innerHTML =
+"⚠️ Failed to load";
+
+}
+
+}
+
+  
 const html5QrCode = new Html5Qrcode("reader");
 
 html5QrCode.start(
