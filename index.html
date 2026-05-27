@@ -95,13 +95,26 @@ button{
 font-size:22px;
 padding:15px;
 margin:5px;
-width:170px;
 border:none;
 border-radius:14px;
 font-weight:bold;
 color:white;
 }
 
+
+.actionButtons{
+display:flex;
+justify-content:center;
+gap:10px;
+width:100%;
+}
+
+.actionButtons button{
+flex:1;
+max-width:170px;
+}
+
+  
 .outBtn{
 background:#ff9800;
 }
@@ -243,6 +256,8 @@ id="comment"
 placeholder="Комментарий"
 />
 
+<div class="actionButtons">
+
 <button class="outBtn" onclick="setMode('OUT')">
 Выдача
 </button>
@@ -250,6 +265,8 @@ placeholder="Комментарий"
 <button class="inBtn" onclick="setMode('IN')">
 Прием
 </button>
+
+</div>
 
 <button
 class="listBtn"
